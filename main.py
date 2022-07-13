@@ -33,7 +33,7 @@ def simular():
         messagebox.showinfo("Error","No pueden haber campos vacios, por favor rellene todos los campos")
         limpiarInputs()
         return 0
-    if not (input_antiguedad.get().isdigit() or input_escala.get().isdigit() or input_tiempo.get().isdigit()):
+    if not (input_antiguedad.get().isdigit() and input_escala.get().isdigit() and input_tiempo.get().isdigit()):
         messagebox.showinfo("Error","Solo puede ingresar números enteros o decimales")
         limpiarInputs()
         return 0
