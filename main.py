@@ -47,12 +47,17 @@ def simular():
         return 0
     # Si no hubo errores se ejecuta la simulación
     valor_graficar = combo.get()
-    texto_prediccion = modeloDifuso.predecir(valor_antiguedad,valor_habilidad,valor_tiempo,valor_graficar)
+    texto_prediccion, juegosSeleccionados, juegosAlternativos = modeloDifuso.predecir(valor_antiguedad,valor_habilidad,valor_tiempo,valor_graficar)
     texto_resultado_update = "La categoría de juegos determinada para sus\npreferencias es: " + texto_prediccion
-    texto_resultado_update = texto_resultado_update + "\n\n" + "Los juegos recomendados para esta\ncategoría según sus preferencias son:\n"
-    texto_resultado_update = texto_resultado_update + "\n" + "   - Aqui van los juegos listados\n"
-    texto_resultado_update = texto_resultado_update + "\n" + "Otros juego recomendados son:\n "
-    texto_resultado_update = texto_resultado_update + "\n" + "   -Amongus"
+    texto_resultado_update = texto_resultado_update + "\n\n" + "Los juegos recomendados para esta\ncategoría según sus preferencias son:\n\n"
+    for juego in juegosSeleccionados:
+        texto_resultado_update = texto_resultado_update + "- " + juego[0] + "\n"
+    if(len(juegosAlternativos) == 0):
+        texto_resultado_update = texto_resultado_update + "\n" + "No se encontro un resultado\nconcreto en nuestra base de\ndatos, pero los juegos que\nse acoplan a su categoría son:\n"
+    else:
+        texto_resultado_update = texto_resultado_update + "\n" + "Otros juegos recomendados para la categoría son:\n\n"
+    for juego in juegosAlternativos:
+        texto_resultado_update = texto_resultado_update + "- " + juego[0] + "\n"
     canvas.itemconfigure(texto_resultado, text = texto_resultado_update, font = ("Inter", 16 * -1))
 
 window = Tk()

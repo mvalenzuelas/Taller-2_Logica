@@ -2,7 +2,37 @@ import skfuzzy as fuzz
 import numpy as np 
 import matplotlib.pyplot as plt
 
-def entregarCategoria(grado_plataforma,grado_puzzle,grado_metroidvania,grado_sandox):
+def conseguirAntiguedad(pertenenciaModerno, pertenenciaNoTanAntiguo, pertenenciaAntiguo):
+    # Se obtiene el maximo de las pertenencias
+    pertenenciaMayor = max([pertenenciaModerno,pertenenciaNoTanAntiguo,pertenenciaAntiguo])
+    #Se retorna una string que representa la antiguedad escogida:
+    if pertenenciaMayor == pertenenciaModerno:
+        return "moderno"
+    if pertenenciaMayor == pertenenciaNoTanAntiguo:
+        return "noTanAntiguo"
+    return "antiguo"
+
+def conseguirHabilidad(pertenenciaPocoHabil, pertenenciaAlgoHabil, pertenenciaMuyHabil):
+    # Se obtiene el maximo de las pertenencias
+    pertenenciaMayor = max([pertenenciaPocoHabil,pertenenciaAlgoHabil,pertenenciaMuyHabil])
+    #Se retorna una string que representa la habilidad escogida:
+    if pertenenciaMayor == pertenenciaPocoHabil:
+        return "pocoHabil"
+    if pertenenciaMayor == pertenenciaAlgoHabil:
+        return "algoHabil"
+    return "muyHabil"
+
+def conseguirTiempo(pertenenciaPocoTiempo, pertenenciaAlgoDeTiempo, pertenenciaMuchoTiempo):
+    # Se obtiene el maximo de las pertenencias
+    pertenenciaMayor = max([pertenenciaPocoTiempo,pertenenciaAlgoDeTiempo,pertenenciaMuchoTiempo])
+    #Se retorna una string que representa el tiempo libre escogido:
+    if pertenenciaMayor == pertenenciaPocoTiempo:
+        return "pocoTiempo"
+    if pertenenciaMayor == pertenenciaAlgoDeTiempo:
+        return "algoDeTiempo"
+    return "muchoTiempo"
+
+def entregarCategoria(grado_plataforma, grado_puzzle, grado_metroidvania, grado_sandox):
     mayorValor = max([grado_plataforma,grado_puzzle,grado_metroidvania,grado_sandox])
     if mayorValor == grado_plataforma:
         return 0, "Plataforma"
@@ -42,7 +72,29 @@ class modeloDifuso:
         self.genero_puzzle = fuzz.trimf(self.rango_genero, [2,4,5.5])
         self.genero_metroidvania = fuzz.trimf(self.rango_genero, [4.5, 6.5, 8.5])
         self.genero_sandbox = fuzz.trapmf(self.rango_genero, [7.5, 8, 10, 10])
-    
+
+        ## Base de datos de juegos:
+        self.juegos_plataforma = [
+            ["Mario Bros","antiguo","algoHabil","algoDeTiempo"],
+            ["Megaman X","antiguo","muyHabil","pocoTiempo"],
+            ["Cuphead","moderno","muyHabil","muchoTiempo"],
+            ["Inside","noTanAntiguo","pocoHabil","pocoTiempo"]]
+
+        self.juegos_puzzle = [
+            ["Portal","antiguo","pocoHabil","algoDeTiempo"],
+            ["It Takes Two","moderno","algoHabil","muchoTiempo"],
+            ["Human: Fall Flat","noTanAntiguo","muyHabil","pocoTiempo"]]
+
+        self.juegos_metroidvania = [
+            ["Hollow Knight","noTanAntiguo","muyHabil","algoDeTiempo"],
+            ["Ori and the Will of the Wisps","moderno","pocoHabil","muchoTiempo"],
+            ["Super Metroid","antiguo","algoHabil","pocoTiempo"]]
+
+        self.juegos_sandbox = [
+            ["Minecraft","antiguo","muyHabil","muchoTiempo"],
+            ["Hitman","noTanAntiguo","algoHabil","algoDeTiempo"],
+            ["Genshin Impact","moderno","pocoHabil","pocoTiempo"]]
+
     def predecir(self,input_antiguedad, input_habilidad, input_tiempo, opcion_graficar):
         # Se consigue el grado de pertenencia para los inputs ingresados
 
@@ -130,11 +182,20 @@ class modeloDifuso:
 
         numCategoria, textoOutput = entregarCategoria(grado_plataforma, grado_puzzle, grado_metroidvania, grado_sandbox)
 
-        # En caso el usuario haya solicitado mostrar este grafico
+        # Ademas se retornaran los juegos que mejor se ajusten a las caracteristicas ingresadas, para esto
+        # se conseguira que caracteristicas tienen el mayor grado de pertenencia para las entradas ingresadas
+
+        antiguedad_seleccionada = conseguirAntiguedad(grado_antiguedad_moderno, grado_antiguedad_noTanAntiguo, grado_antiguedad_antiguo)
+        habilidad_seleccionada = conseguirHabilidad(grado_habilidad_pocoHabil, grado_habilidad_algoHabil, grado_habilidad_muyHabil)
+        tiempo_seleccionado = conseguirTiempo(grado_tiempo_pocoTiempo, grado_tiempo_algoDeTiempo, grado_tiempo_muchoTiempo)
+
+        # Se consiguen los juegos que mejor se ajustan a las preferencias ingresadas
+        juegosSeleccionados, juegosAlternativos = self.retornarListaJuegosPreferidos(numCategoria, antiguedad_seleccionada, habilidad_seleccionada, tiempo_seleccionado)
+        # En caso el usuario haya solicitado mostrar el gráfico de resultado final con la desfusificación
         if opcion_graficar == "Si":
             self.graficarResultadoCoa(agregacion,desfuzzificacion)
 
-        return textoOutput
+        return textoOutput, juegosSeleccionados, juegosAlternativos
 
     def graficarFuncionesDePertenenciaDifusas(self):
         # Grafica de resumen generada
@@ -194,3 +255,48 @@ class modeloDifuso:
 
         plt.tight_layout()
         plt.show()
+
+    def retornarListaJuegosPreferidos(self, numCategoria, antiguedad, habilidad, tiempo):
+        juegosSeleccionados = []
+        juegosAlternativos = []
+
+        # Si la categoria escogida fue plataforma
+        if(numCategoria == 0):
+            arregloBusqueda = self.juegos_plataforma
+        # Si la categoria escogida fue puzzle
+        if(numCategoria == 1):
+            arregloBusqueda = self.juegos_puzzle
+        # Si la categoria escogida fue Metroidvania
+        if(numCategoria == 2):
+            arregloBusqueda = self.juegos_metroidvania
+        # Si la categoria escogida fue Sandbox
+        if(numCategoria == 3):
+            arregloBusqueda = self.juegos_sandbox
+
+        # Se busca el o los juegos que concuerden con las preferencias
+        for juego in arregloBusqueda:
+            if(juego[1] == antiguedad and juego[2] == habilidad and juego[3] == tiempo):
+                juegosSeleccionados.append(juego)
+        # Si ningún juego cumplio las caracteristicas por completo, se efectua una segunda busqueda
+        if(len(juegosSeleccionados) == 0):
+            for juego in arregloBusqueda:
+                #Se agrega cualquier juego que cumpla con las caracteristicas, dejando una fuera
+                if(juego[1] == antiguedad and juego[2] == habilidad):
+                    juegosSeleccionados.append(juego)
+        # Si ningún juego cumplio las caracteristicas por completo, se efectua una tercera busqueda, solo buscando una caracteristica
+        if(len(juegosSeleccionados) == 0):
+            for juego in arregloBusqueda:
+                #Se agrega cualquier juego que cumpla con las caracteristicas, dejando una fuera
+                if(juego[1] == antiguedad):
+                    juegosSeleccionados.append(juego)
+        # Si ningún juego cumplio con las caracteristicas, se muestran los juegos de la categoria correspondiente
+        if(len(juegosSeleccionados) == 0):
+            for juego in arregloBusqueda:
+                juegosSeleccionados.append(juego)
+            
+        # Se agregan los juegos que no fueron seleccionados de la categoría
+        for juego in arregloBusqueda:
+            if juego not in juegosSeleccionados:
+                juegosAlternativos.append(juego)
+        
+        return juegosSeleccionados, juegosAlternativos
