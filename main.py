@@ -1,15 +1,20 @@
+# Importación de librerías
 from pathlib import Path
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Label, ttk, messagebox, END
 import tkinter.font as font
 import modelo_difuso as md # Se importa el modelo de lógica difusa creado en un archivo aparte
 
+# Se usa la librería Path para poder fijar el directorio y leer archivos
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path("./assets")
 
-
+# Fija el directorío actual
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
+#Entrada:
+#Salida: 
+#Objetivo: Limpia todos los inputs de la interfaz de usuario
 def limpiarInputs():
     input_antiguedad.delete(0,END)
     input_antiguedad.insert(0, "")
@@ -18,6 +23,10 @@ def limpiarInputs():
     input_tiempo.delete(0,END)
     input_tiempo.insert(0, "")
 
+#Entrada:
+#Salida: 
+#Objetivo: Verifica todos los inputs y efectúa la simulación usando el modelo difuso o señala posibles errores.
+#          actualiza además los resultados en pantalla.
 def simular():
     # Se verifica que existen valores
     if(input_antiguedad.get() == '' or input_escala.get() == '' or input_tiempo.get() == ''):
@@ -48,6 +57,7 @@ def simular():
     # Si no hubo errores se ejecuta la simulación
     valor_graficar = combo.get()
     texto_prediccion, juegosSeleccionados, juegosAlternativos = modeloDifuso.predecir(valor_antiguedad,valor_habilidad,valor_tiempo,valor_graficar)
+    # Se escribe en la gui el resultado conseguido
     texto_resultado_update = "La categoría de juegos determinada para sus\npreferencias es: " + texto_prediccion
     texto_resultado_update = texto_resultado_update + "\n\n" + "Los juegos recomendados para esta\ncategoría según sus preferencias son:\n\n"
     for juego in juegosSeleccionados:
@@ -60,16 +70,21 @@ def simular():
         texto_resultado_update = texto_resultado_update + "- " + juego[0] + "\n"
     canvas.itemconfigure(texto_resultado, text = texto_resultado_update, font = ("Inter", 16 * -1))
 
+
+## Definición de componentes de la interfaz de usuario
 window = Tk()
 
+# Caracteristicas de la ventana
 window.geometry("873x712")
 window.configure(bg = "#36103F")
 window.title("Recomendador Difuso")
 
+# Se fija el fondo
 bg = PhotoImage(file=relative_to_assets("gradient.png"))
 label1 = Label(image = bg)
 label1.place(x = 0, y = 0)
 
+# Se crea un canvas para ingresar elementos en él
 canvas = Canvas(
     window,
     bg = "purple",
@@ -132,6 +147,7 @@ canvas.create_rectangle(
     fill="#424242",
     outline="#000000")
 
+# Botón que permite efectuar la simulación
 f1 = font.Font(family='Inter', size=12, weight="bold")
 button_ejecutar_simulacion = Button(
     bg='#990404',
@@ -150,6 +166,7 @@ button_ejecutar_simulacion.place(
 )
 button_ejecutar_simulacion['font'] = f1
 
+# Botón que permite mostrar la gráfica de funciones de pertenencia
 f = font.Font(family='Inter', size=12, weight="bold")
 button_ver_graficas = Button(
     bg='#2D5FC0',
@@ -260,6 +277,7 @@ input_tiempo.place(
     height=33.0
 )
 
+# Combobox que permite elegir si se desea o no el gráfico
 combo = ttk.Combobox(state="readonly",
         values=["Si","No"])
 combo.place(x=163, y=570)
@@ -282,8 +300,8 @@ canvas.create_text(
     font=("Inter", 20 * -1)
 )
 
-
-## Se crea un objeto de modelo difuso
+## Se crea un objeto de modelo difuso, instanciandolo desde la clase
 modeloDifuso = md.modeloDifuso()
 window.resizable(False, False)
+# Se ejecuta la interfaz de usuario
 window.mainloop()

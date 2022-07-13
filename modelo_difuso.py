@@ -1,7 +1,11 @@
+# Importación de librerías
 import skfuzzy as fuzz 
 import numpy as np 
 import matplotlib.pyplot as plt
 
+#Entrada: flotantes que corresponden a los grados de pertenencia para la variable Antiguedad
+#Salida: una string que representa que antiguedad determino el modelo difuso
+#Objetivo: Determinar a que categoría de antiguedad corresponden los inputs de los usuarios según su grado de pertenencia
 def conseguirAntiguedad(pertenenciaModerno, pertenenciaNoTanAntiguo, pertenenciaAntiguo):
     # Se obtiene el maximo de las pertenencias
     pertenenciaMayor = max([pertenenciaModerno,pertenenciaNoTanAntiguo,pertenenciaAntiguo])
@@ -12,6 +16,9 @@ def conseguirAntiguedad(pertenenciaModerno, pertenenciaNoTanAntiguo, pertenencia
         return "noTanAntiguo"
     return "antiguo"
 
+#Entrada: flotantes que corresponden a los grados de pertenencia para la variable Habilidad
+#Salida: una string que representa la habilidad determinada por el modelo difuso
+#Objetivo: Determinar a que categoría de habilidad corresponden los inputs de los usuarios según su grado de pertenencia
 def conseguirHabilidad(pertenenciaPocoHabil, pertenenciaAlgoHabil, pertenenciaMuyHabil):
     # Se obtiene el maximo de las pertenencias
     pertenenciaMayor = max([pertenenciaPocoHabil,pertenenciaAlgoHabil,pertenenciaMuyHabil])
@@ -22,6 +29,9 @@ def conseguirHabilidad(pertenenciaPocoHabil, pertenenciaAlgoHabil, pertenenciaMu
         return "algoHabil"
     return "muyHabil"
 
+#Entrada: flotantes que corresponden a los grados de pertenencia para la variable Habilidad
+#Salida: una string que representa la habilidad determinada por el modelo difuso
+#Objetivo: Determinar a que categoría de habilidad corresponden los inputs de los usuarios según su grado de pertenencia
 def conseguirTiempo(pertenenciaPocoTiempo, pertenenciaAlgoDeTiempo, pertenenciaMuchoTiempo):
     # Se obtiene el maximo de las pertenencias
     pertenenciaMayor = max([pertenenciaPocoTiempo,pertenenciaAlgoDeTiempo,pertenenciaMuchoTiempo])
@@ -32,6 +42,9 @@ def conseguirTiempo(pertenenciaPocoTiempo, pertenenciaAlgoDeTiempo, pertenenciaM
         return "algoDeTiempo"
     return "muchoTiempo"
 
+#Entrada: flotantes que corresponden a los grados de pertenencia para la variable Género/Categoría
+#Salida: una string que representa el género determinado por el modelo difuso
+#Objetivo: Determinar a que género corresponde el resultado del modelo difuso a través de sus grados de pertenencia
 def entregarCategoria(grado_plataforma, grado_puzzle, grado_metroidvania, grado_sandox):
     mayorValor = max([grado_plataforma,grado_puzzle,grado_metroidvania,grado_sandox])
     if mayorValor == grado_plataforma:
@@ -43,7 +56,9 @@ def entregarCategoria(grado_plataforma, grado_puzzle, grado_metroidvania, grado_
     if mayorValor == grado_sandox:
         return 3, "Sandbox"
 
+# Clase que representa al modelo difuso, contiene atributos y métodos para poder efectuar simulaciones/consultas
 class modeloDifuso:
+    # Constructor del método, en el cúal se crearan las funciones de pertenencia y la base de datos
     def __init__(self):
         # Creacion de escalas de rangos de valores a tomar
         self.rango_antiguedad = np.arange(0, 15, 0.1) # Antiguedad en años
@@ -78,23 +93,51 @@ class modeloDifuso:
             ["Mario Bros","antiguo","algoHabil","algoDeTiempo"],
             ["Megaman X","antiguo","muyHabil","pocoTiempo"],
             ["Cuphead","moderno","muyHabil","muchoTiempo"],
-            ["Inside","noTanAntiguo","pocoHabil","pocoTiempo"]]
+            ["Inside","noTanAntiguo","pocoHabil","pocoTiempo"],
+            ["It takes two", "moderno","algoHabil","muchoTiempo"],
+		    ["Super Mario Odyssey","moderno","pocoHabil","algoDeTiempo"],
+		    ["Psychonauts","noTanAntiguo","pocoHabil","muchoTiempo"],
+		    ["Mark of the Ninja","noTanAntiguo","muyHabil","muchoTiempo"]]
 
         self.juegos_puzzle = [
             ["Portal","antiguo","pocoHabil","algoDeTiempo"],
             ["It Takes Two","moderno","algoHabil","muchoTiempo"],
-            ["Human: Fall Flat","noTanAntiguo","muyHabil","pocoTiempo"]]
+            ["Human: Fall Flat","noTanAntiguo","muyHabil","pocoTiempo"],
+            ["Portal 2", "noTanAntiguo", "pocoHabil", "algoDeTiempo"],
+		    ["THE TALOS PRINCIPLE", "moderno","pocoHabil","pocoTiempo"],
+		    ["The Witness","moderno","pocoHabil","pocoTiempo"],
+		    ["Tetris", "antiguo","pocoHabil","pocoTiempo"],
+		    ["Fez","noTanAntiguo","pocoHabil","pocoTiempo"],
+		    ["Unpacking", "moderno","pocoHabil","pocoTiempo"]]
 
         self.juegos_metroidvania = [
             ["Hollow Knight","noTanAntiguo","muyHabil","algoDeTiempo"],
             ["Ori and the Will of the Wisps","moderno","pocoHabil","muchoTiempo"],
-            ["Super Metroid","antiguo","algoHabil","pocoTiempo"]]
+            ["Super Metroid","antiguo","algoHabil","pocoTiempo"],
+            ["Castlevania", "antiguo","habil","pocoTiempo"],
+		    ["Guacamelee! 2", "noTanAntiguo","habil","algoDeTiempo"],
+		    ["BLOODSTAINED: CURSE OF THE MOON","moderno","pocoHabil","pocoTiempo"],
+		    ["Metroid Dread", "moderno","pocoHabil","algoDeTiempo"],
+		    ["Blasphemous","moderno","algoHabil","muchoTiempo"]]
 
         self.juegos_sandbox = [
             ["Minecraft","antiguo","muyHabil","muchoTiempo"],
             ["Hitman","noTanAntiguo","algoHabil","algoDeTiempo"],
-            ["Genshin Impact","moderno","pocoHabil","pocoTiempo"]]
+            ["Genshin Impact","moderno","pocoHabil","pocoTiempo"],
+            ["Grant Thieft Auto: V", "moderno", "pocoHabil","muchoTiempo"],
+		    ["Elden Ring", "moderno", "pocoHabil","pocoTiempo"],
+		    ["Assasins creed", "noTanAntiguo","algoHabil," "algoDeTiempo"],
+		    ["CyberPunk","moderno","algoHabil","algoDeTiempo"],
+		    ["GRAND THEFT AUTO: SAN ANDREAS","antiguo","pocoHabil,","algoDeTiempo"],
+		    ["THE ELDER SCROLLS V: SKYRIM", "antiguo", "pocoHabil", "pocoTiempo"],
+		    ["The Witcher 3","moderno","muyHabil","pocoTiempo"]]
 
+    #Entrada: tres flotantes de inputs de antiguedad, habilidad y tiempo por parte del usuario
+    #         string que indica si quiere ver grafico de resultado
+    #Salida: String que contiene la categoría determinada, arreglo con juegos que mejor se acoplan a la categoría
+    #        arreglo con juegos de la misma categoría
+    #Objetivo: Construir y ejecutar la inferencia de Mamdani para las entradas dadas, desfuzzificando por metodo COA,
+    #          entregando los resultados, juegos y gráficas correspondientes para la simulación efectuada.
     def predecir(self,input_antiguedad, input_habilidad, input_tiempo, opcion_graficar):
         # Se consigue el grado de pertenencia para los inputs ingresados
 
@@ -197,6 +240,9 @@ class modeloDifuso:
 
         return textoOutput, juegosSeleccionados, juegosAlternativos
 
+    #Entrada:
+    #Salida: 
+    #Objetivo: Mostrar por pantalla las gráficas de las funciones de pertenencia del modelo difuso
     def graficarFuncionesDePertenenciaDifusas(self):
         # Grafica de resumen generada
         plt.figure()
@@ -232,6 +278,10 @@ class modeloDifuso:
         plt.legend(loc="upper left")
         plt.show()
 
+    #Entrada: lista de resultado de la agregación, resultado de la desfusificación
+    #Salida: 
+    #Objetivo: Mostrar por pantalla la gráfica final de resultado de todo el proceso de inferencia
+    #          mostrando la figura resultante además del resultado de la desfusificación por COA
     def graficarResultadoCoa(self,agregacion,desfuzzificacion):
         ejeCero = np.zeros_like(self.rango_genero) # Auxiliar para graficar
         tip_activation = fuzz.interp_membership(self.rango_genero, agregacion, desfuzzificacion)
@@ -256,6 +306,9 @@ class modeloDifuso:
         plt.tight_layout()
         plt.show()
 
+    #Entrada: entero que representa el numero de categoria, strings corrrespondientes a la antiguedad, habilidad y tiempo
+    #Salida: dos listas, una con los juegos más adecuados determinados y otra con todos los juegos restantes de la misma categoría
+    #Objetivo: Conseguir los juegos más idoneos para las entradas ingresadas por el usuarios, además de todos los juegos restantes para la misma categoría
     def retornarListaJuegosPreferidos(self, numCategoria, antiguedad, habilidad, tiempo):
         juegosSeleccionados = []
         juegosAlternativos = []
